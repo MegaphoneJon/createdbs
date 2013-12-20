@@ -30,6 +30,8 @@ usage () {
   echo "	--makefile		Specify a drush makefile"
   echo "	--debug			Show debug messages"
   echo "	--delete		Delete the databases (beta)"
+  echo "Example: createdbs.sh -n js -a justicestragies.org -d justicestrategies.org -u
+www-data -g www-data -r /var/www"
 }
 deps () {
   DEPENDENCIES="pwgen"
