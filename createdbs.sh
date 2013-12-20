@@ -67,7 +67,17 @@ sanitychecks () {
 
   #check for existence of MySQL creds
   if [ ! -f "$HOME/.my.cnf" ]; then
-    echo ".my.cnf file does not exist in your home directory." >&2
+    echo ".my.cnf file does not exist in your home directory. Aborting." >&2
+    exit
+  fi
+  #check that user and group exist
+  if ! getent passwd $USER > /dev/null ;then
+    echo "User $USER does not exist. Aborting." >&2
+    exit
+  fi
+
+  if ! getent group $GROUP > /dev/null ;then
+    echo "Group $GROUP does not exist. Aborting." >&2
     exit
   fi
 
