@@ -31,8 +31,46 @@ usage () {
   echo "	--debug			Show debug messages"
   echo "	--delete		Delete the databases (beta)"
 }
-sanitychecks () {
+deps () {
+  DEPENDENCIES="pwgen"
+ 
+  deps_ok=1
+  for dep in $DEPENDENCIES
+    do
+      if ! which $dep > /dev/null ;then
+        echo "This script requires $dep to run but it is not installed"
+        echo "If you are running ubuntu or debian you might be able to install $dep with the following  command"
+        echo "\t\tsudo apt-get install $dep\n"
+        deps_ok=0
+      fi
+    done
+    if [ "$deps_ok" -eq 0 ]; then
+      echo -e "Unmet dependencies ^"                
+      echo -e "Aborting!"
+      exit 1
+    else
+      return 0
+    fi
+}
 
+sanitychecks () {
+  #check for required options
+  if [ -z $CLIENTNAME ] 
+  then
+    echo "you must specify a client name with -n or --name"
+    echo "Example: createdbs.sh -n pth"
+    echo "Use createdbs.sh --help for more info"
+    exit
+  fi
+
+  #check for existence of MySQL creds
+  if [ ! -f "$HOME/.my.cnf" ]; then
+    echo ".my.cnf file does not exist in your home directory." >&2
+    exit
+  fi
+
+  #check dependencies
+  deps  
 }
 createdrupal () {
   if [ "$DEBUG" -eq 1 ]; then echo DEBUG: Creating Drupal database and user; fi
@@ -52,6 +90,7 @@ createfiles () {
   mkdir $CLIENTNAME
   chown $USER:$GROUP $CLIENTNAME
   chmod g+w $CLIENTNAME
+  chmod g+s $CLIENTNAME
   cd $CLIENTNAME
   drush make $DRUSHMAKEFILE
   chown -R $USER:$GROUP .
@@ -121,8 +160,8 @@ createapacheconfig () {
 
 delete () {
   if [ "$DEBUG" -eq 1 ]; then echo DEBUG: Deleting database and filesystem; fi
-  'mysqladmin drop '$CLIENTNAME'_civi'
-  'mysqladmin drop '$CLIENTNAME'_drupal'
+  mysqladmin drop ${CLIENTNAME}_civi
+  mysqladmin drop ${CLIENTNAME}_drupal
   mysql mysql -e 'DELETE FROM user WHERE User = '\'$CLIENTNAME\'';'
   rm $APACHECONFIGFILE
   cd $ROOTDIR
@@ -224,14 +263,7 @@ while [ $# -gt 0 ]; do
   esac
 done
 
-#check for required options
-if [ -z $CLIENTNAME ] 
-then
-  echo "you must specify a client name with -n or --name"
-  echo "Example: createdbs.sh -n pth"
-  echo "Use createdbs.sh --help for more info"
-  exit
-fi
+sanitychecks
 
 #set APACHECONFIGFILE if it's not set.
 if [ -z "$APACHECONFIGFILE" ]; then APACHECONFIGFILE=$APACHEFILEPATH$CLIENTNAME.local; fi
