@@ -88,12 +88,18 @@ createdrupal () {
   if [ "$DEBUG" -eq 1 ]; then echo DEBUG: Creating Drupal database and user; fi
   mysqladmin create $CLIENTNAME'_drupal'
   mysql -e 'GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES ON `'$CLIENTNAME'_drupal`.* TO '\'$CLIENTNAME\''@'\''localhost'\'' IDENTIFIED BY '\'$password\'';'
+#manually
+#create database ppsp_drupal_dev;
+#GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES ON ``.* TO ''@'localhost' IDENTIFIED BY '';
 }
 
 createcivi () {
   if [ "$DEBUG" -eq 1 ]; then echo DEBUG: Creating Civi database and user; fi
   mysqladmin create $CLIENTNAME'_civi'
   mysql -e 'GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES, TRIGGER, CREATE ROUTINE, ALTER ROUTINE ON `'$CLIENTNAME'_civi`.* TO '\'$CLIENTNAME\''@'\''localhost'\'' IDENTIFIED BY '\'$password\'';'	
+#manually:
+#create database ppsp_civi_dev;
+#GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER, LOCK TABLES, CREATE TEMPORARY TABLES, TRIGGER, CREATE ROUTINE, ALTER ROUTINE ON ``.* TO ''@'localhost' IDENTIFIED BY '';
 }
 
 createfiles () {
