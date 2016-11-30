@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/bin/bash
 # 
 #start in the directory you want to create it in or specify -r
 
 USER=jon
-GROUP=www-dev
+GROUP=www-data
 DOCIVI=1
 CLIENTNAME=
 ROOTDIR=`pwd`
@@ -14,7 +14,7 @@ APACHECONFIGFILE=
 DOMAINNAME=
 #used when the APACHECONFIGFILE isn't set
 APACHEFILEPATH=/etc/apache2/sites-available/
-password=`pwgen 15 1`
+password=`pwgen 32 1`
 
 usage () {
   echo "createdbs [options] -n clientname"
@@ -34,10 +34,10 @@ usage () {
 www-data -g www-data -r /var/www"
 }
 deps () {
-  DEPENDENCIES="pwgen"
+  declare -a DEPENDENCIES=(pwgen drush mysql)
  
   deps_ok=1
-  for dep in $DEPENDENCIES
+  for dep in ${DEPENDENCIES[@]}
     do
       if ! which $dep > /dev/null ;then
         echo "This script requires $dep to run but it is not installed"
